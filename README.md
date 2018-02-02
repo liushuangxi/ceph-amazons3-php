@@ -1,1 +1,1 @@
-# ceph-amazones3-php
+# ceph-amazons3-php
