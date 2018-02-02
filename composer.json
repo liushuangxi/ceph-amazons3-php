@@ -1,0 +1,26 @@
+{
+  "name": "liushuangxi/ceph-amazons3-php",
+  "description": "ceph amazons3 client for php",
+  "type": "library",
+  "keywords": [
+    "ceph",
+    "amazons3",
+    "php"
+  ],
+  "time": "2018-01-20",
+  "authors": [
+    {
+      "name": "柳双喜",
+      "email": "729021170@qq.com"
+    }
+  ],
+  "require": {
+    "aws/aws-sdk-php": "^3.52"
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Liushuangxi\\Ceph\\": "src/ceph-amazons3-php"
+    }
+  }
+}
