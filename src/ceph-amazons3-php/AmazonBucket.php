@@ -38,32 +38,69 @@ class AmazonBucket
      */
     public function createBucket($bucket = '', $acl = '', $args = [])
     {
-        if (!empty($acl)) {
-            $args['ACL'] = $acl;
-        }
+        try {
+            if (!empty($acl)) {
+                $args['ACL'] = $acl;
+            }
 
-        if (!empty($bucket)) {
-            $args['Bucket'] = $bucket;
-        }
+            if (!empty($bucket)) {
+                $args['Bucket'] = $bucket;
+            }
 
-        $result = $this->client->createBucket($args)->toArray();
+            $this->client->createBucket($args)->toArray();
 
-        if (isset($result['@metadata']['statusCode']) && $result['@metadata']['statusCode'] == '200') {
-            return true;
-        } else {
+            return $this->existBucket($bucket);
+        } catch (\Exception $e) {
             return false;
         }
     }
 
-//https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-s3-2006-03-01.html#deletebucket
-
+    /**
+     * https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-s3-2006-03-01.html#deletebucket
+     *
+     * @param string $bucket
+     *
+     * @return bool
+     */
     public function deleteBucket($bucket = '')
     {
-        $args = [
-            'Bucket' => $bucket
-        ];
+        try {
+            $args = [
+                'Bucket' => $bucket
+            ];
 
-        $result = $this->client->deleteBucket($args)->toArray();
+            $this->client->deleteBucket($args)->toArray();
+
+            return !$this->existBucket($bucket);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-s3-2006-03-01.html#headbucket
+     *
+     * @param string $bucket
+     *
+     * @return bool
+     */
+    public function existBucket($bucket = '')
+    {
+        try {
+            $args = [
+                'Bucket' => $bucket
+            ];
+
+            $result = $this->client->headBucket($args)->toArray();
+
+            if (isset($result['@metadata']['statusCode']) && $result['@metadata']['statusCode'] == '200') {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
