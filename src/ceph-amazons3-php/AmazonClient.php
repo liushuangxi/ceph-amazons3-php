@@ -25,12 +25,10 @@ class AmazonClient
      *
      * @param $config
      *
-     * host
-     * http://127.0.0.1:1234 带http的完整host路径
-     *
+     * host         http://127.0.0.1:1234 带http的完整host路径
      * access_key
-     *
      * secret_key
+     * url_type     sub_domain/path 子域名/路径
      *
      * 说明：
      *
