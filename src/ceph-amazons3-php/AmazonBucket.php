@@ -30,66 +30,69 @@ class AmazonBucket
     /**
      * https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-s3-2006-03-01.html#createbucket
      *
-     * @param string $bucket
-     * @param string $acl
      * @param array $args
+     * ACL
+     * Bucket
      *
-     * @return bool
+     * @return bool|null
      */
-    public function createBucket($bucket = '', $acl = '', $args = [])
+    public function createBucket($args = [])
     {
         try {
-            if (!empty($acl)) {
-                $args['ACL'] = $acl;
-            }
-
-            if (!empty($bucket)) {
-                $args['Bucket'] = $bucket;
+            if (!isset($args['Bucket'])) {
+                return false;
             }
 
             $this->client->createBucket($args)->toArray();
 
-            return $this->existBucket($bucket);
+            return $this->existBucket(['Bucket' => $args['Bucket']]);
         } catch (\Exception $e) {
-            return false;
+            return null;
         }
     }
 
     /**
      * https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-s3-2006-03-01.html#deletebucket
      *
-     * @param string $bucket
+     * @param array $args
+     * Bucket
      *
-     * @return bool
+     * @return bool|null
      */
-    public function deleteBucket($bucket = '')
+    public function deleteBucket($args = [])
     {
         try {
-            $args = [
-                'Bucket' => $bucket
-            ];
+            if (!isset($args['Bucket'])) {
+                return true;
+            }
 
             $this->client->deleteBucket($args)->toArray();
 
-            return !$this->existBucket($bucket);
+            $exist = $this->existBucket(['Bucket' => $args['Bucket']]);
+            if (is_null($exist)) {
+                return $exist;
+            } else {
+                return !$exist;
+            }
         } catch (\Exception $e) {
-            return false;
+            return null;
         }
     }
 
     /**
      * https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-s3-2006-03-01.html#headbucket
      *
-     * @param string $bucket
+     * @param array $args
+     * Bucket
      *
-     * @return bool
+     * @return bool|null
      */
-    public function existBucket($bucket = '')
+    public function existBucket($args = [])
     {
         try {
-            $args = [
-                'Bucket' => $bucket
-            ];
+            if (!isset($args['Bucket'])) {
+                return false;
+            }
 
             $result = $this->client->headBucket($args)->toArray();
 
@@ -99,7 +102,7 @@ class AmazonBucket
                 return false;
             }
         } catch (\Exception $e) {
-            return false;
+            return null;
         }
     }
 
@@ -108,13 +111,17 @@ class AmazonBucket
      *
      * @param array $args
      *
-     * @return array
+     * @return array|null
      */
     public function listBuckets($args = [])
     {
-        $buckets = $this->client->listBuckets($args)->toArray();
-        $buckets = array_column($buckets['Buckets'], 'Name');
+        try {
+            $buckets = $this->client->listBuckets($args)->toArray();
+            $buckets = array_column($buckets['Buckets'], 'Name');
 
-        return $buckets;
+            return $buckets;
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 }
